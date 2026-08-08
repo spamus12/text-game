@@ -33,7 +33,6 @@ shared_ptr<Item> Game::Room::getItem(string name) {
 
 /* World functions */
 
-
 // Initialize the world
 void Game::initSetup() {
 	setup = true;
