@@ -91,17 +91,17 @@ private:
 	static bool setup;
 
 	// Stores each command
-	map<string, CommandFunc> commandMap;
+	static map<string, CommandFunc> commandMap;
 
 
 	/* Command functions */
 
 	// Process the player input and execute the command
-	void processCommand(const string& verb, const string& noun);
+	static void processCommand(const string& verb, const string& noun);
 
-	void handleGo(const string& noun);		// Moves the player
-	void handleTake(const string& noun);	// Takes an item from a room
-	void handleLook(const string& noun);	// Examines an item or room
+	static void handleGo(const string& noun);		// Moves the player
+	static void handleTake(const string& noun);	// Takes an item from a room
+	static void handleLook(const string& noun);	// Examines an item or room
 
 
 public:

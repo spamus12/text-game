@@ -1,6 +1,8 @@
 #include "game.h"
 #include <algorithm>
 #include <chrono>
+#include <functional>
+#include <map>
 #include <memory>
 #include <random>
 #include <thread>
@@ -39,6 +41,11 @@ void Game::initSetup() {
 	rooms = {};
 	addRoom(DEFAULT_ROOM);
 	gameOver = false;
+
+	// Register commands
+	commandMap["go"] = [](const string& noun) { Game::handleGo(noun); };
+	commandMap["take"] = [](const string& noun) { Game::handleTake(noun); };
+	commandMap["look"] = [](const string& noun) { Game::handleLook(noun); };
 }
 
 // Begin the game
