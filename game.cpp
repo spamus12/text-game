@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <random>
+#include <string>
 #include <thread>
 #include <typeinfo>
 #include "actor.h"
@@ -18,6 +19,7 @@ int Game::playerX{};
 int Game::playerY{};
 bool Game::gameOver{};
 bool Game::setup{ false };
+map<string, CommandFunc> Game::commandMap{};
 
 const Game::Room Game::DEFAULT_ROOM = Game::Room("Error", 0, -20, "You did something wrong.");
 
@@ -43,9 +45,10 @@ void Game::initSetup() {
 	gameOver = false;
 
 	// Register commands
-	commandMap["go"] = [](const string& noun) { Game::handleGo(noun); };
-	commandMap["take"] = [](const string& noun) { Game::handleTake(noun); };
-	commandMap["look"] = [](const string& noun) { Game::handleLook(noun); };
+	commandMap["go"] = [](const string& target) { Game::handleGo(target); };
+	commandMap["take"] = [](const string& target) { Game::handleTake(target); };
+	commandMap["look"] = [](const string& target) { Game::handleLook(target); };
+	//commandMap["search"] = [](const string& target) { Game::handleSearch(target); };
 }
 
 // Begin the game
@@ -92,6 +95,14 @@ void Game::initGame() {
     cout << "Your journey begins." << endl;
     waitForSeconds(1.0f);
     look();
+
+	// Begin input loop
+	string input{};
+	while (input != "quit") {
+		cout << "> ";
+		getline(cin, input);
+		processCommand(input);
+	}
 
 }
 

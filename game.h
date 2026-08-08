@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -97,11 +98,11 @@ private:
 	/* Command functions */
 
 	// Process the player input and execute the command
-	static void processCommand(const string& verb, const string& noun);
+	static void processCommand(const string& command);
 
-	static void handleGo(const string& noun);		// Moves the player
-	static void handleTake(const string& noun);	// Takes an item from a room
-	static void handleLook(const string& noun);	// Examines an item or room
+	static void handleGo(const string& target);		// Moves the player
+	static void handleTake(const string& target);		// Takes an item from a room
+	static void handleLook(const string& target);		// Examines an item or room
 
 
 public:
