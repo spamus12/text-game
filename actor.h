@@ -15,6 +15,7 @@ class Armor;
 class Actor;
 class Character;
 class Player;
+class Body;
 
 // Base class for all actors
 class Actor {
@@ -58,6 +59,9 @@ public:
 	// Set examine function
 	void setExamine(function<void()> f);
 
+	// Virtual destructor for polymorphism
+	virtual ~Actor() = default;
+
 };
 
 
@@ -68,7 +72,7 @@ class Character : public Actor {
 private:
 	// Default members
 	const function<void()> DEFAULT_TALK;
-	const function<void(shared_ptr<Player>)> DEFAULT_ATTACK;
+	const function<void()> DEFAULT_ATTACK;
 	const function<void(shared_ptr<Player>)> DEFAULT_TURN;
 	
 protected:
@@ -84,11 +88,17 @@ protected:
 	shared_ptr<Weapon> weapon;
 	shared_ptr<Armor> armor;
 
+	// Speed
+	int speed;
+
+	// Experience yield
+	unsigned int expValue;
+
 	// Store the talk function
 	function<void()> fTalk;
 
 	// Store the attack function
-	function<void(shared_ptr<Player>)> fAttack;
+	function<void()> fAttack;
 
 	// Store the character's combat turn
 	function<void(shared_ptr<Player>)> fTurn;
@@ -98,7 +108,7 @@ public:
 	// Constructor
 	Character(
 		string _ID, string _name, unsigned int _maxHP, vector<shared_ptr<Item>> _inventory,
-		shared_ptr<Weapon> _weapon, shared_ptr<Armor> _armor);
+		shared_ptr<Weapon> _weapon, shared_ptr<Armor> _armor, int _speed, unsigned int _expValue);
 
 	// Equip gear
 	void equip(shared_ptr<Weapon> w);
@@ -110,10 +120,10 @@ public:
 	void talk();
 
 	// Run attack function
-	void attack(shared_ptr<Player>);
+	void attack();
 
 	// Run turn function
-	void turn(shared_ptr<Player>);
+	void turn(shared_ptr<Player> player);
 
 	// Return the equipped weapon
 	shared_ptr<Weapon> getWeapon() const;
@@ -129,14 +139,15 @@ public:
 	unsigned int getMaxHP() const;
 	int getCurrentHP() const;
 	vector<shared_ptr<Item>> getInventory() const;
-	string getInitDesc() const;
+	int getSpeed() const;
+	unsigned int getExp() const;
 
 	void setMaxHP(unsigned int amount);
 	void setCurrentHP(int amount);
-	void setInitDesc(string newDesc);
+	void setSpeed(int s);
 
 	void setTalk(function<void()> f);
-	void setAttack(function<void(shared_ptr<Player>)> f);
+	void setAttack(function<void()> f);
 	void setTurn(function<void(shared_ptr<Player>)> f);
 
 };
@@ -162,6 +173,9 @@ protected:
 	shared_ptr<Weapon> weapon;
 	shared_ptr<Armor> armor;
 
+	// Speed
+	int speed;
+
 public:
 	Player(string _name) :
 		Actor("PLAYER", _name),
@@ -171,7 +185,8 @@ public:
 		exp{ 0 },
 		inventory{},
 		weapon{},
-		armor{}
+		armor{},
+		speed{ 0 }
 	{ }
 
 	// Check if the player can level up and do so
@@ -182,6 +197,9 @@ public:
 
 	// Add an item to the player's inventory
 	void give(shared_ptr<Item> item);
+
+	// Remove the first instance of an item from the player's inventory
+	void removeItem(string iName);
 
 	// Equip gear
 	void equip(shared_ptr<Weapon> w);
@@ -199,9 +217,53 @@ public:
 	vector<shared_ptr<Item>> getInventory() const;
 	shared_ptr<Weapon> getWeapon() const;
 	shared_ptr<Armor> getArmor() const;
+	int getSpeed() const;
 
 	void setMaxHP(unsigned int amount);
 	void setCurrentHP(int amount);
 	void setExp(unsigned int amount);
+	void setSpeed(int amount);
+
+};
+
+
+/* Body class */
+class Body : public Actor {
+
+protected:
+
+	// The items stored in the body
+	vector<shared_ptr<Item>> inventory;
+
+public:
+	// Constructor
+	Body(string _ID, string _name, vector<shared_ptr<Item>> _inventory);
+
+	// Take the first instance of an item from the inventory
+	shared_ptr<Item> take(string iName);
+
+	// Get reference to inventory
+	vector<shared_ptr<Item>>& getInventory();
+
+};
+
+
+/* Box class */
+class Box : public Actor {
+
+protected:
+
+	// The items stored in the box
+	vector<shared_ptr<Item>> inventory;
+
+public:
+	// Constructor
+	Box(string _ID, string _name, vector<shared_ptr<Item>> _inventory);
+
+	// Take the first instance of an item from the inventory
+	shared_ptr<Item> take(string iName);
+
+	// Get reference to inventory
+	vector<shared_ptr<Item>>& getInventory();
 
 };

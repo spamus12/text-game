@@ -10,11 +10,9 @@ void setup();
 
 int main() {
 
-	Game::initGame("Dominic");
+	Game::initSetup();
 	setup();
-
-	Game::look("Start");
-	Game::getRoomPtr()->getActor("Knight1")->examine();
+	Game::initGame();
 
 	return 0;
 }
@@ -22,8 +20,8 @@ int main() {
 
 void setup() {
 
-	auto sword = make_shared<Weapon>("Sword", "A knight's blade.", 5, SLASHING);
-	auto plateArmor = make_shared<Armor>("Plate Armor", "Heavy armor of thick metal plating.", 4);
+	auto sword = make_shared<Weapon>("Sword", "A knight's blade.", 5, SLASHING, 0);
+	auto plateArmor = make_shared<Armor>("Plate Armor", "Heavy armor of thick metal plating.", 4, -3);
 	auto keepsake = make_shared<Item>("Keepsake", "An old locket from a time long past.");
 
 	auto knight = make_shared<Character>(
@@ -32,13 +30,18 @@ void setup() {
 		40,
 		vector<shared_ptr<Item>>{ sword, plateArmor, keepsake },
 		sword,
-		plateArmor
+		plateArmor,
+		3,
+		30
 	);
 
 	Game::addRoom("Start", 0, 0, "You are in an empty room.");
 	Game::spawnActor("Start", knight);
 
-	auto pennies = make_shared<Item>("pile of pennies", "A pile of pennies.");
+	auto pennies = make_shared<Item>("pile of pennies", "It is simply a pile of copper coins.");
 	Game::spawnItem("Start", pennies);
+
+	auto bomb = make_shared<Support>("Bomb", "An explosive device.", ATTACK, 20);
+	auto potion = make_shared<Support>("Potion", "A healing potion.", HEAL, 5);
 
 }

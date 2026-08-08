@@ -20,6 +20,11 @@ enum Direction {
 	EAST,
 	WEST
 };
+enum EnemyType {
+	VERMIN = 10,
+	STANDARD = 20,
+	BOSS = 40
+};
 // A static object for game management
 class Game {
 
@@ -53,7 +58,11 @@ private:
 		{ }
 
 		// Get actor by ID
-		shared_ptr<Actor> getActor(string id);
+		template <typename T>
+		shared_ptr<T> getActor(string id);
+
+		// Get the first instance of an item by name
+		shared_ptr<Item> getItem(string name);
 		
 	};
 
@@ -70,22 +79,54 @@ private:
 	// Used if a function tries to return a reference to a nonexistant room
 	static const Room DEFAULT_ROOM;
 
+	// Determines when the game loop should stop
+	static bool gameOver;
+
+	// Determines if any setup is allowed
+	// Specific functions require this variable to be true to run
+	static bool setup;
+
+
 public:
+
+	// Constant dodge chance
+	static const int BASE_DODGE{ 10 };
+
+
 	/* World functions */
 
 	// Initialize world
-	static void initGame(string playerName, int x = 0, int y = 0);
+	static void initSetup();
+
+	// Begin the game
+	static void initGame();
 
 	// Add a room to the world
 	static void addRoom(string id, int x, int y, string desc);
+	static void addRoom(Room room);
 
 	// Check if a room exists
 	static const bool isRoom(string id);
 	static const bool isRoom(int x, int y);
 
 	// Spawn an actor in the specified room
-	static void spawnActor(string id, shared_ptr<Actor> actor);
-	static void spawnActor(int x, int y, shared_ptr<Actor> actor);
+	template <typename T>
+	static void spawnActor(string id, shared_ptr<T> actor);
+	template <typename T>
+	static void spawnActor(int x, int y, shared_ptr<T> actor);
+	template <typename T>
+	static void spawnActor(shared_ptr<T> actor);
+
+	// Remove an actor from the specified room
+	// Unspecified room means the current room
+	static void removeActor(string rID, string aID);
+	static void removeActor(int x, int y, string aID);
+	static void removeActor(string aID);
+
+	// Remove a character from the specified room and replace it with a body
+	static void kill(string rID, string aID);
+	static void kill(int x, int y, string aID);
+	static void kill(string aID);
 
 	// Spawn an item in the specified room
 	static void spawnItem(string id, shared_ptr<Item> item);
@@ -94,6 +135,12 @@ public:
 	// Print the specified room's description and list all actors and items
 	static const void look(string id);
 	static const void look(int x, int y);
+
+	// Initialize combat with a character
+	static void initCombat(shared_ptr<Character> enemy, EnemyType eType);
+
+	// Set the state of the game to end
+	static void setGameOver();
 
 
 	/* Player functions */
@@ -113,6 +160,15 @@ public:
 	// Determines if a word starts with a vowel
 	static const bool vowelStart(string s);
 
+	// Wait for a specified amount of seconds
+	static const void waitForSeconds(float seconds);
+
+	// Prompt the player for input
+	static const void prompt(string& s, bool ignoreCaps = true);
+
+	// Calculate variable damage roll
+	static int getRoll(unsigned int damage);
+
 
 	/* Getter functions */
 
@@ -131,6 +187,9 @@ public:
 	// Get a reference to the rooms vector
 	static const vector<Room>& getRoomsList();
 
+	// Get a pointer to the player
+	static shared_ptr<Player> getPlayerPtr();
+
 	// Get a reference to the player
 	static const shared_ptr<Player>& getPlayerRef();
 
@@ -139,3 +198,7 @@ public:
 	static const int getPlayerY();
 
 };
+
+
+/* Template function definitions */
+#include "game-templates.ipp"
