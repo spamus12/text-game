@@ -102,6 +102,7 @@ public:
 	static void initGame();
 
 	// Add a room to the world
+	// Setup function
 	static void addRoom(string id, int x, int y, string desc);
 	static void addRoom(Room room);
 
