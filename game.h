@@ -152,6 +152,9 @@ public:
 	// Move the player in the specified direction
 	static void move(Direction dir);
 
+	// Describe the current room
+	static void look();
+
 
 	/* Other functions */
 
