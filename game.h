@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <map>
 #include <memory>
 #include <vector>
 using namespace std;
@@ -12,6 +13,9 @@ class Armor;
 class Actor;
 class Character;
 class Player;
+
+// Define game action function type
+using CommandFunc = function<void(const string&)>;
 
 
 enum Direction {
@@ -85,6 +89,19 @@ private:
 	// Determines if any setup is allowed
 	// Specific functions require this variable to be true to run
 	static bool setup;
+
+	// Stores each command
+	map<string, CommandFunc> commandMap;
+
+
+	/* Command functions */
+
+	// Process the player input and execute the command
+	void processCommand(const string& verb, const string& noun);
+
+	void handleGo(const string& noun);		// Moves the player
+	void handleTake(const string& noun);	// Takes an item from a room
+	void handleLook(const string& noun);	// Examines an item or room
 
 
 public:
