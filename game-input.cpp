@@ -130,7 +130,7 @@ void Game::handleLook(const string& target) {
 
 
 // Find an item in a room based on a specific query
-shared_ptr<Item> Game::findItem(Room* room, const string& query) {
+shared_ptr<Item> Game::findItem(Room* room, const string& query, int its) {
 
     // Split the query into mulitple words
     stringstream ss(query);
@@ -139,12 +139,26 @@ shared_ptr<Item> Game::findItem(Room* room, const string& query) {
     while (getline(ss, current, ' '))
         words.push_back(current);
 
+    // Further specify the query if needed
+    string newQuery{ "" };
+    for (int i = 0; i < its; i++) {
+        newQuery += words[i];
+        if (i != its - 1) newQuery += ' ';
+    }
+
     // Go through and find one that contains the query
     for (int item = 0; item < room->items.size(); item++) {
-        if (room->items[item]->getName().find(query) != string::npos) {
+        if (room->items[item]->getName().find(newQuery) != string::npos) {
             return room->items[item];
         }
     }
-    return nullptr;
+    
+    // If at the end of the recursion, then abort
+    if (its == words.size()) {
+        return nullptr;
+    }
+
+    // Otherwise, recurse
+    return findItem(room, query, its+1);
 
 }

@@ -204,7 +204,7 @@ public:
 	static void lowercase(string& s);
 
 	// Use an algorithm to find an item based on a query
-	static shared_ptr<Item> findItem(Room* room, const string& query);
+	static shared_ptr<Item> findItem(Room* room, const string& query, int its = 1);
 
 	/* Getter functions */
 
