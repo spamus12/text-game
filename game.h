@@ -197,6 +197,9 @@ public:
 	// Calculate variable damage roll
 	static int getRoll(unsigned int damage);
 
+	// Return a lowercase version of the passed string
+	static void lowercase(string& s);
+
 
 	/* Getter functions */
 

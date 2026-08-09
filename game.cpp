@@ -673,6 +673,13 @@ int Game::getRoll(unsigned int damage) {
 	* (Game::randint(0, 1) == 1) ? -1 : 1;
 }
 
+// Return a lowercase version of the passed string
+void Game::lowercase(string& s) {
+	transform(s.begin(), s.end(), s.begin(), [](unsigned char c) {
+            return tolower(c);
+        });
+}
+
 
 /* Getter functions */
 
