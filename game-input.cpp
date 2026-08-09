@@ -95,6 +95,12 @@ void Game::handleGo(const string& target) {
 
 // Takes an item from a room
 void Game::handleTake(const string& target) {
+
+    // If the target is empty, then abort
+    if (target == "") {
+        cout << "Take what?" << endl;
+        return;
+    }
     
     // Get a pointer to the current room
     Room* room = getRoomPtr();
@@ -121,6 +127,7 @@ void Game::handleTake(const string& target) {
 void Game::handleLook(const string& target) {
     cout << "Look function!" << endl;
 }
+
 
 // Find an item in a room based on a specific query
 shared_ptr<Item> Game::findItem(Room* room, const string& query) {
