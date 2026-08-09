@@ -53,6 +53,7 @@ void Game::processCommand(const string& command) {
     }
 
     // Call the appropriate function
+    cout << endl;
     if (commandMap.find(action) != commandMap.end())
         commandMap[action](target);
     else
@@ -132,7 +133,31 @@ void Game::handleLook(const string& target) {
         return;
     }
 
-    // Now start by searching the actors in the room
+    // Get a pointer to the room
+    Room* room = getRoomPtr();
+
+    // Start by searching the actors in the room
+    shared_ptr<Actor> actor = findActor(room, target);
+    if (actor != nullptr) {
+
+        // Call the actor's examine function
+        actor->examine();
+        return;
+
+    }
+
+    // End by searching the items in the room
+    shared_ptr<Item> item = findItem(room, target);
+    if (item != nullptr) {
+
+        // Print the item's description
+        item->printDesc();
+        return;
+
+    }
+
+    // If it made it this far then there was nothing found
+    cout << "I couldn't find a '" << target << ".'" << endl;
 
 }
 
@@ -156,7 +181,9 @@ shared_ptr<Item> Game::findItem(Room* room, const string& query, int its) {
 
     // Go through and find one that contains the query
     for (int item = 0; item < room->items.size(); item++) {
-        if (room->items[item]->getName().find(newQuery) != string::npos) {
+        string name = room->items[item]->getName();
+        lowercase(name);        // Make the name lowercase
+        if (name.find(newQuery) != string::npos) {
             return room->items[item];
         }
     }
@@ -190,7 +217,9 @@ shared_ptr<Actor> Game::findActor(Room* room, const string& query, int its) {
 
     // Go through and find one that contains the query
     for (int actor = 0; actor < room->items.size(); actor++) {
-        if (room->actors[actor]->getName().find(newQuery) != string::npos) {
+        string name = room->actors[actor]->getName();
+        lowercase(name);        // Make the name lowercase
+        if (name.find(newQuery) != string::npos) {
             return room->actors[actor];
         }
     }
