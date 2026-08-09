@@ -50,7 +50,11 @@ void Game::processCommand(const string& command) {
     for (int i = 1; i < words.size(); i++)
         target += words[i] + ' ';
 
-    cout << action << " " << target << endl;
+    // Call the appropriate function
+    if (commandMap.find(action) != commandMap.end())
+        commandMap[action](target);
+    else
+        cout << "I don't know what you mean by '" << action << ".'" << endl;;
 
 }
 
@@ -69,15 +73,15 @@ string Game::normAction(const string& action) {
 
 // Moves the player
 void Game::handleGo(const string& noun) {
-    ;
+    cout << "Go function!" << endl;
 }
 
 // Takes an item from a room
 void Game::handleTake(const string& noun) {
-    ;
+    cout << "Take function!" << endl;
 }
 
 // Examines an item or room
 void Game::handleLook(const string& noun) {
-    ;
+    cout << "Look function!" << endl;
 }
