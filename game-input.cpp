@@ -1,6 +1,8 @@
 #include "game.h"
+#include <algorithm>
 #include <cctype>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -29,7 +31,7 @@ void Game::processCommand(const string& command) {
     while (getline(ss, word, ' ')) {
 
         // Check if the word is a filler word
-        if (find(begin(badWords), end(badWords), word) != end(badWords))
+        if (std::find(std::begin(badWords), std::end(badWords), word) != std::end(badWords))
             continue;
 
         // Add it to the vector of words
@@ -45,8 +47,10 @@ void Game::processCommand(const string& command) {
     action = normAction(words[0]);
 
     // The rest of the statement should be the target
-    for (int i = 1; i < words.size(); i++)
-        target += words[i] + ' ';
+    for (int i = 1; i < words.size(); i++) {
+        target += words[i];
+        if (i != words.size() - 1) target += ' ';
+    }
 
     // Call the appropriate function
     if (commandMap.find(action) != commandMap.end())
@@ -104,6 +108,8 @@ void Game::handleTake(const string& target) {
 
     // Give the item to the player
     player->give(item);
+
+    cout << "'" << item->getName() << "' added to inventory." << endl;
 
     // Remove the item from the room
     removeItem(room, item->getName());
