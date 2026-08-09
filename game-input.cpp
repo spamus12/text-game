@@ -39,10 +39,33 @@ void Game::processCommand(const string& command) {
     }
 
     // Determine the action and target
-    string action;
-    string target;
+    string action{""};
+    string target{""};
+
+    // The action should be the first word
+    // If it's a synonym, then normalize it
+    action = normAction(words[0]);
+
+    // The rest of the statement should be the target
+    for (int i = 1; i < words.size(); i++)
+        target += words[i] + ' ';
+
+    cout << action << " " << target << endl;
 
 }
+
+// Check if the passed action is a synonym
+string Game::normAction(const string& action) {
+
+    // Search the map
+    auto it = actionSyns.find(action);
+    if (it != actionSyns.end()) {
+        return it->second;  // Return the primary action
+    }
+    return action;  // Either unrecognized or already a primary action
+
+}
+
 
 // Moves the player
 void Game::handleGo(const string& noun) {

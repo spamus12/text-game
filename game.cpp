@@ -20,6 +20,7 @@ int Game::playerY{};
 bool Game::gameOver{};
 bool Game::setup{ false };
 map<string, CommandFunc> Game::commandMap{};
+map<string, string> Game:: actionSyns{};
 
 const Game::Room Game::DEFAULT_ROOM = Game::Room("Error", 0, -20, "You did something wrong.");
 
@@ -49,6 +50,21 @@ void Game::initSetup() {
 	commandMap["take"] = [](const string& target) { Game::handleTake(target); };
 	commandMap["look"] = [](const string& target) { Game::handleLook(target); };
 	//commandMap["search"] = [](const string& target) { Game::handleSearch(target); };
+	//commandMap["interact"] = [](const string& target) { Game::handleInteract(target); };
+	//commandMap["fight"] = [](const string& target) { Game::handleFight(target); };
+
+	// Register command synonyms
+	actionSyns["move"] = "go";
+	actionSyns["run"]  = "go";
+	actionSyns["walk"] = "go";
+
+	actionSyns["get"]  = "take";
+	actionSyns["grab"] = "take";
+	actionSyns["pick"] = "take";
+
+	actionSyns["examine"] = "look";
+	actionSyns["inspect"] = "look";
+	actionSyns["see"]     = "look";
 }
 
 // Begin the game

@@ -94,11 +94,17 @@ private:
 	// Stores each command
 	static map<string, CommandFunc> commandMap;
 
+	// Stores synonyms for each command
+	static map<string, string> actionSyns;
+
 
 	/* Command functions */
 
 	// Process the player input and execute the command
 	static void processCommand(const string& command);
+
+	// Check if the passed action is a synonym
+	static string normAction(const string& action);
 
 	static void handleGo(const string& target);		// Moves the player
 	static void handleTake(const string& target);		// Takes an item from a room
