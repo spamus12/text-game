@@ -4,6 +4,8 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include "actor.h"
+#include "item.h"
 using namespace std;
 
 
@@ -163,6 +165,7 @@ public:
 	// Print the specified room's description and list all actors and items
 	static const void look(string id);
 	static const void look(int x, int y);
+	static const void look();
 
 	// Initialize combat with a character
 	static void initCombat(shared_ptr<Character> enemy, EnemyType eType);
@@ -178,9 +181,6 @@ public:
 
 	// Move the player in the specified direction
 	static void move(Direction dir);
-
-	// Describe the current room
-	static void look();
 
 
 	/* Other functions */

@@ -79,6 +79,9 @@ void Game::initGame() {
 		return;
 	}
 
+	playerX = 0;
+	playerY = 0;
+
 	// Intro sequence variables and items
 	string pName{""};
 
@@ -110,6 +113,7 @@ void Game::initGame() {
     waitForSeconds(2.0f);
     cout << "Your journey begins." << endl;
     waitForSeconds(1.0f);
+	cout << endl;
     look();
 
 	// Initialize the player
@@ -320,6 +324,9 @@ const void Game::look(string id) {
 }
 const void Game::look(int x, int y) {
 	look(getRoomPtr(x, y)->ID);
+}
+const void Game::look() {
+	look(getRoomPtr(playerX, playerY)->ID);
 }
 
 // Combat healthbar forward declaration
@@ -646,47 +653,6 @@ void Game::move(Direction dir) {
 	}
 
 	moveTo(newX, newY);
-}
-
-// Describe the current room and items in it
-void Game::look() {
-
-	const Room& room = getRoomRef();
-
-	// Describe the room
-	cout << room.desc << endl;
-
-	// List all the items
-	cout << endl;
-	for (int i = 0; i < room.items.size(); i++) {
-
-		shared_ptr<Item> item = room.items[i];
-
-		// Choose a random initial description of each item
-		int choice = randint(1, 3);
-		switch(choice) {
-			case 1:
-				if (vowelStart(item->getName())) 
-					cout << "There is an " << item->getName() << " on the ground nearby." << endl;
-				else
-					cout << "There is a " << item->getName() << " on the ground nearby." << endl;
-				break;
-			case 2:
-				if (vowelStart(item->getName()))
-					cout << "An " << item->getName() << " lies close by." << endl;
-				else
-					cout << "A " << item->getName() << " lies close by." << endl;
-				break;
-			case 3:
-				if (vowelStart(item->getName()))
-					cout << "You see an " << item->getName() << " sitting on the floor." << endl;
-				else
-					cout << "You see a " << item->getName() << " sitting on the floor." << endl;
-				break;
-		}
-
-	}
-
 }
 
 

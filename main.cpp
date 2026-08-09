@@ -1,8 +1,6 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-#include "actor.h"
-#include "item.h"
 #include "game.h"
 
 
@@ -34,6 +32,8 @@ void setup() {
 		3,
 		30
 	);
+
+	knight->setInitDesc("A towering soldier in heavy armor leans against a nearby wall.");
 
 	Game::addRoom("Start", 0, 0, "You are in an empty room.");
 	Game::spawnActor("Start", knight);
