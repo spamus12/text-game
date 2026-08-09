@@ -112,6 +112,9 @@ void Game::initGame() {
     waitForSeconds(1.0f);
     look();
 
+	// Initialize the player
+	player = make_shared<Player>(pName);
+
 	// Begin input loop
 	string input{};
 	while (input != "quit") {
