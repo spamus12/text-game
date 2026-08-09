@@ -157,6 +157,9 @@ public:
 	static void spawnItem(string id, shared_ptr<Item> item);
 	static void spawnItem(int x, int y, shared_ptr<Item> item);
 
+	// Remove an item from the specified room
+	static void removeItem(Room* room, string iName);
+
 	// Print the specified room's description and list all actors and items
 	static const void look(string id);
 	static const void look(int x, int y);
@@ -200,6 +203,8 @@ public:
 	// Return a lowercase version of the passed string
 	static void lowercase(string& s);
 
+	// Use an algorithm to find an item based on a query
+	static shared_ptr<Item> findItem(Room* room, const string& query);
 
 	/* Getter functions */
 

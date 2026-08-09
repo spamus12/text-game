@@ -115,8 +115,7 @@ void Game::initGame() {
 	// Begin input loop
 	string input{};
 	while (input != "quit") {
-		cout << "> ";
-		getline(cin, input);
+		prompt(input);
 		processCommand(input);
 	}
 
@@ -248,6 +247,25 @@ void Game::spawnItem(int x, int y, shared_ptr<Item> item) {
 	}
 	Room* room = getRoomPtr(x, y);
 	room->items.push_back(item);
+}
+
+// Remove an item from the specified room
+void Game::removeItem(Room* room, string iName) {
+	vector<shared_ptr<Item>> newItems{};
+	bool found{ false };
+	for (int i = 0; i < room->items.size(); i++) {
+		if (room->items[i]->getName() == iName && !found) {
+			found = true;
+		}
+		else {
+			newItems.push_back(room->items[i]);
+		}
+	}
+	if (!found) {
+		cout << "Item '" << iName << "' not found." << endl;
+		return;
+	}
+	room->items = newItems;
 }
 
 // Print the specified room's description and list all actors and items

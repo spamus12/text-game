@@ -1,9 +1,12 @@
 #include "game.h"
 #include <cctype>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
+#include "actor.h"
+#include "item.h"
 
 
 // Define game action function type
@@ -24,11 +27,6 @@ void Game::processCommand(const string& command) {
     vector<string> words;
 
     while (getline(ss, word, ' ')) {
-
-        // Make it lowercase
-        transform(word.begin(), word.end(), word.begin(), [](unsigned char c) {
-            return tolower(c);
-        });
 
         // Check if the word is a filler word
         if (find(begin(badWords), end(badWords), word) != end(badWords))
@@ -73,7 +71,7 @@ string Game::normAction(const string& action) {
 
 // Moves the player
 map<char, Direction> dirs{};
-void Game::handleGo(const string& noun) {
+void Game::handleGo(const string& target) {
     
     // Determine the direction
     dirs['n'] = NORTH;
@@ -82,7 +80,7 @@ void Game::handleGo(const string& noun) {
     dirs['w'] = WEST;
 
     // Check it and move in it
-    char d = noun[0];
+    char d = target[0];
     if (dirs.find(d) != dirs.end())
         move(dirs[d]);
     else 
@@ -90,12 +88,50 @@ void Game::handleGo(const string& noun) {
     
 }
 
+
 // Takes an item from a room
-void Game::handleTake(const string& noun) {
-    cout << "Take function!" << endl;
+void Game::handleTake(const string& target) {
+    
+    // Get a pointer to the current room
+    Room* room = getRoomPtr();
+
+    // Try to find the specified item
+    shared_ptr<Item> item = findItem(room, target);
+    if (item == nullptr) {
+        cout << "Could not find item '" << target << ".'" << endl;
+        return;
+    }
+
+    // Give the item to the player
+    player->give(item);
+
+    // Remove the item from the room
+    removeItem(room, item->getName());
+
 }
 
+
 // Examines an item or room
-void Game::handleLook(const string& noun) {
+void Game::handleLook(const string& target) {
     cout << "Look function!" << endl;
+}
+
+// Find an item in a room based on a specific query
+shared_ptr<Item> Game::findItem(Room* room, const string& query) {
+
+    // Split the query into mulitple words
+    stringstream ss(query);
+    string current;
+    vector<string> words;
+    while (getline(ss, current, ' '))
+        words.push_back(current);
+
+    // Go through and find one that contains the query
+    for (int item = 0; item < room->items.size(); item++) {
+        if (room->items[item]->getName().find(query) != string::npos) {
+            return room->items[item];
+        }
+    }
+    return nullptr;
+
 }
