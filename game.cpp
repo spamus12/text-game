@@ -50,7 +50,7 @@ void Game::initSetup() {
 	commandMap["take"] = [](const string& target) { Game::handleTake(target); };
 	commandMap["look"] = [](const string& target) { Game::handleLook(target); };
 	//commandMap["search"] = [](const string& target) { Game::handleSearch(target); };
-	//commandMap["interact"] = [](const string& target) { Game::handleInteract(target); };
+	//commandMap["use"] = [](const string& target) { Game::handleUse(target); };
 	//commandMap["fight"] = [](const string& target) { Game::handleFight(target); };
 
 	// Register command synonyms
