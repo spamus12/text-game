@@ -648,16 +648,51 @@ void Game::move(Direction dir) {
 	moveTo(newX, newY);
 }
 
-// Describe the current room
+// Describe the current room and items in it
 void Game::look() {
+
 	const Room& room = getRoomRef();
+
+	// Describe the room
 	cout << room.desc << endl;
+
+	// List all the items
+	cout << endl;
+	for (int i = 0; i < room.items.size(); i++) {
+
+		shared_ptr<Item> item = room.items[i];
+
+		// Choose a random initial description of each item
+		int choice = randint(1, 3);
+		switch(choice) {
+			case 1:
+				if (vowelStart(item->getName())) 
+					cout << "There is an " << item->getName() << " on the ground nearby." << endl;
+				else
+					cout << "There is a " << item->getName() << " on the ground nearby." << endl;
+				break;
+			case 2:
+				if (vowelStart(item->getName()))
+					cout << "An " << item->getName() << " lies close by." << endl;
+				else
+					cout << "A " << item->getName() << " lies close by." << endl;
+				break;
+			case 3:
+				if (vowelStart(item->getName()))
+					cout << "You see an " << item->getName() << " sitting on the floor." << endl;
+				else
+					cout << "You see a " << item->getName() << " sitting on the floor." << endl;
+				break;
+		}
+
+	}
+
 }
 
 
 /* Other functions */
 
-// RNG implementation
+// RNG implementation (inclusive)
 random_device rd;
 mt19937 gen(rd());
 const int Game::randint(int floor, int top) {
@@ -691,7 +726,7 @@ const void Game::prompt(string& s, bool ignoreCaps) {
 // Calculate variable damage roll
 int Game::getRoll(unsigned int damage) {
 	return Game::randint(1, max(static_cast<int>(damage % 5), 1))
-	* (Game::randint(0, 1) == 1) ? -1 : 1;
+	* ((Game::randint(0, 1) == 1) ? -1 : 1);
 }
 
 // Return a lowercase version of the passed string

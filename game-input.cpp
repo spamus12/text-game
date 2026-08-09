@@ -115,7 +115,7 @@ void Game::handleTake(const string& target) {
     // Give the item to the player
     player->give(item);
 
-    cout << "'" << item->getName() << "' added to inventory." << endl;
+    cout << "The " << item->getName() << " was added to your inventory." << endl;
 
     // Remove the item from the room
     removeItem(room, item->getName());
