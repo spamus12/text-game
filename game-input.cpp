@@ -123,9 +123,17 @@ void Game::handleTake(const string& target) {
 }
 
 
-// Examines an item or room
+// Examines an item, actor, or room
 void Game::handleLook(const string& target) {
-    cout << "Look function!" << endl;
+    
+    // If the target is blank or room, then just call look again
+    if (target == "" || target == "room" || target == "around") {
+        look();
+        return;
+    }
+
+    // Now start by searching the actors in the room
+
 }
 
 
@@ -160,5 +168,39 @@ shared_ptr<Item> Game::findItem(Room* room, const string& query, int its) {
 
     // Otherwise, recurse
     return findItem(room, query, its+1);
+
+}
+
+// Find an actor in a room based on a specific query
+shared_ptr<Actor> Game::findActor(Room* room, const string& query, int its) {
+
+    // Split the query into mulitple words
+    stringstream ss(query);
+    string current;
+    vector<string> words;
+    while (getline(ss, current, ' '))
+        words.push_back(current);
+
+    // Further specify the query if needed
+    string newQuery{ "" };
+    for (int i = 0; i < its; i++) {
+        newQuery += words[i];
+        if (i != its - 1) newQuery += ' ';
+    }
+
+    // Go through and find one that contains the query
+    for (int actor = 0; actor < room->items.size(); actor++) {
+        if (room->actors[actor]->getName().find(newQuery) != string::npos) {
+            return room->actors[actor];
+        }
+    }
+    
+    // If at the end of the recursion, then abort
+    if (its == words.size()) {
+        return nullptr;
+    }
+
+    // Otherwise, recurse
+    return findActor(room, query, its+1);
 
 }

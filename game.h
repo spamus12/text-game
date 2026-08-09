@@ -203,8 +203,11 @@ public:
 	// Return a lowercase version of the passed string
 	static void lowercase(string& s);
 
-	// Use an algorithm to find an item based on a query
+	// Use a recursive algorithm to find an item based on a query
 	static shared_ptr<Item> findItem(Room* room, const string& query, int its = 1);
+
+	// Use a recursive algorithm to find an actor based on a query
+	static shared_ptr<Actor> findActor(Room* room, const string& query, int its = 1);
 
 	/* Getter functions */
 
