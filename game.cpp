@@ -624,8 +624,7 @@ void Game::move(Direction dir) {
 		break;
 	}
 
-	if (isRoom(newX, newY))
-		moveTo(newX, newY);
+	moveTo(newX, newY);
 }
 
 // Describe the current room
