@@ -596,10 +596,9 @@ void Game::moveTo(int x, int y) {
 	for (Room r : rooms)
 		if (r.x == x && r.y == y) {
 
-			string roomDesc = r.desc;
 			playerX = x;
 			playerY = y;
-			cout << roomDesc << endl;
+			look();
 
 		}
 	

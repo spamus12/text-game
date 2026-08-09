@@ -72,8 +72,22 @@ string Game::normAction(const string& action) {
 
 
 // Moves the player
+map<char, Direction> dirs{};
 void Game::handleGo(const string& noun) {
-    cout << "Go function!" << endl;
+    
+    // Determine the direction
+    dirs['n'] = NORTH;
+    dirs['s'] = SOUTH;
+    dirs['e'] = EAST;
+    dirs['w'] = WEST;
+
+    // Check it and move in it
+    char d = noun[0];
+    if (dirs.find(d) != dirs.end())
+        move(dirs[d]);
+    else 
+        cout << "Please input a direction." << endl;
+    
 }
 
 // Takes an item from a room
