@@ -245,6 +245,9 @@ public:
 	// Get reference to inventory
 	vector<shared_ptr<Item>>& getInventory();
 
+	// Keep track of if the body has been searched
+	bool searched;
+
 };
 
 
@@ -265,5 +268,8 @@ public:
 
 	// Get reference to inventory
 	vector<shared_ptr<Item>>& getInventory();
+
+	// Keep track of if the box has been searched
+	bool searched;
 
 };

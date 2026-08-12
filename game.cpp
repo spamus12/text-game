@@ -46,12 +46,13 @@ void Game::initSetup() {
 	gameOver = false;
 
 	// Register commands
-	commandMap["go"] = [](const string& target) { Game::handleGo(target); };
-	commandMap["take"] = [](const string& target) { Game::handleTake(target); };
-	commandMap["look"] = [](const string& target) { Game::handleLook(target); };
-	//commandMap["search"] = [](const string& target) { Game::handleSearch(target); };
-	//commandMap["use"] = [](const string& target) { Game::handleUse(target); };
-	//commandMap["fight"] = [](const string& target) { Game::handleFight(target); };
+	commandMap["go"]     = [](const string& target) { Game::handleGo(target); };
+	commandMap["take"]   = [](const string& target) { Game::handleTake(target); };
+	commandMap["look"]   = [](const string& target) { Game::handleLook(target); };
+	commandMap["search"] = [](const string& target) { Game::handleSearch(target); };
+	//commandMap["use"]    = [](const string& target) { Game::handleUse(target); };
+	//commandMap["fight"]  = [](const string& target) { Game::handleFight(target); };
+	//commandMap["talk"]   = [](const string& target) { Game::handleTalk(target); };
 
 	// Register command synonyms
 	actionSyns["move"] = "go";
@@ -65,6 +66,8 @@ void Game::initSetup() {
 	actionSyns["examine"] = "look";
 	actionSyns["inspect"] = "look";
 	actionSyns["see"]     = "look";
+
+	actionSyns["open"] = "search";
 }
 
 // Begin the game
@@ -220,7 +223,7 @@ void Game::kill(string rID, string aID) {
 	shared_ptr<Character> character = room->getActor<Character>(aID);
 	string newID = aID + "body";
 	string newName = character->getName() + "'s body";
-	vector<shared_ptr<Item>> inventory = character->getInventory();
+	ItemSet inventory = character->getInventory();
 
 	// Make the body
 	auto body = make_shared<Body>(newID, newName, inventory);
@@ -256,9 +259,9 @@ void Game::spawnItem(int x, int y, shared_ptr<Item> item) {
 	room->items.push_back(item);
 }
 
-// Remove an item from the specified room
+// Remove an item from the specified room / inventory
 void Game::removeItem(Room* room, string iName) {
-	vector<shared_ptr<Item>> newItems{};
+	ItemSet newItems{};
 	bool found{ false };
 	for (int i = 0; i < room->items.size(); i++) {
 		if (room->items[i]->getName() == iName && !found) {
@@ -273,6 +276,23 @@ void Game::removeItem(Room* room, string iName) {
 		return;
 	}
 	room->items = newItems;
+}
+void Game::removeItem(ItemSet& inventory, string iName) {
+	ItemSet newItems{};
+	bool found{ false };
+	for (int i = 0; i < inventory.size(); i++) {
+		if (inventory[i]->getName() == iName && !found) {
+			found = true;
+		}
+		else {
+			newItems.push_back(inventory[i]);
+		}
+	}
+	if (!found) {
+		cout << "Item '" << iName << "' not found." << endl;
+		return;
+	}
+	inventory = newItems;
 }
 
 // Print the specified room's description and list all actors and items
@@ -441,7 +461,7 @@ void Game::initCombat(shared_ptr<Character> enemy, EnemyType eType) {
 				// Use an item
 
 				// Make a vector of all usable items in the player's inventory
-				vector<shared_ptr<Item>> uItems{};
+				ItemSet uItems{};
 				for (shared_ptr<Item> item : player->getInventory()) 
 					if (item->getItemType() == HEAL || item->getItemType() == ATTACK)
 						uItems.push_back(item);

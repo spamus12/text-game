@@ -8,6 +8,12 @@
 #include "item.h"
 using namespace std;
 
+// Define game action function type
+using CommandFunc = function<void(const string&)>;
+
+// Define inventory type
+using ItemSet = vector<shared_ptr<Item>>;
+
 
 // Forward definition
 class Item;
@@ -16,9 +22,6 @@ class Armor;
 class Actor;
 class Character;
 class Player;
-
-// Define game action function type
-using CommandFunc = function<void(const string&)>;
 
 
 enum Direction {
@@ -52,7 +55,7 @@ private:
 		vector<shared_ptr<Actor>> actors;
 
 		// A set of all items in the room
-		vector<shared_ptr<Item>> items;
+		ItemSet items;
 
 		// Constructor
 		Room(string _ID, int _x, int _y, string _desc) :
@@ -108,9 +111,10 @@ private:
 	// Check if the passed action is a synonym
 	static string normAction(const string& action);
 
-	static void handleGo(const string& target);		// Moves the player
+	static void handleGo(const string& target);			// Moves the player
 	static void handleTake(const string& target);		// Takes an item from a room
-	static void handleLook(const string& target);		// Examines an item or room
+	static void handleLook(const string& target);		// Examines an item, room, or actor
+	static void handleSearch(const string& target);		// Views the inventory of a box / body
 
 
 public:
@@ -159,8 +163,9 @@ public:
 	static void spawnItem(string id, shared_ptr<Item> item);
 	static void spawnItem(int x, int y, shared_ptr<Item> item);
 
-	// Remove an item from the specified room
+	// Remove an item from the specified room / inventory
 	static void removeItem(Room* room, string iName);
+	static void removeItem(ItemSet& inventory, string iName);
 
 	// Print the specified room's description and list all actors and items
 	static const void look(string id);
@@ -204,10 +209,16 @@ public:
 	static void lowercase(string& s);
 
 	// Use a recursive algorithm to find an item based on a query
-	static shared_ptr<Item> findItem(Room* room, const string& query, int its = 1);
+	static shared_ptr<Item> findItem(const ItemSet& inventory, const string& query, int its = 1);
+	static shared_ptr<Item> findItem(Room* room, const string& query);
 
 	// Use a recursive algorithm to find an actor based on a query
 	static shared_ptr<Actor> findActor(Room* room, const string& query, int its = 1);
+	template <typename T>
+	static shared_ptr<T> findActorType(Room* room, const string& query, int its = 1);
+
+	// Print a passed inventory vector in a readable manner
+	static void printInventory(const ItemSet& inventory);
 
 	/* Getter functions */
 

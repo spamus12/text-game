@@ -52,6 +52,11 @@ void Game::processCommand(const string& command) {
         if (i != words.size() - 1) target += ' ';
     }
 
+    // Check specific cases
+    if (action == "look" && words[1] == "in") {
+        action = "search";
+    }
+
     // Call the appropriate function
     cout << endl;
     if (commandMap.find(action) != commandMap.end())
@@ -96,6 +101,7 @@ void Game::handleGo(const string& target) {
 
 // Takes an item from a room
 void Game::handleTake(const string& target) {
+    bool fromRoom{ true };
 
     // If the target is empty, then abort
     if (target == "") {
@@ -106,11 +112,36 @@ void Game::handleTake(const string& target) {
     // Get a pointer to the current room
     Room* room = getRoomPtr();
 
-    // Try to find the specified item
+    // Try to find the specified item in the room
     shared_ptr<Item> item = findItem(room, target);
     if (item == nullptr) {
-        cout << "Could not find item '" << target << ".'" << endl;
-        return;
+        fromRoom = false;
+
+        // If the item isn't in the room, then start by searching each searched box and body
+        for (int a = 0; a < room->actors.size(); a++) {
+
+            auto cActor = room->actors[a];
+            auto cast1 = dynamic_pointer_cast<Body>(cActor);
+            if (cast1 && cast1->searched) {
+                item = findItem(cast1->getInventory(), target);
+                if (item != nullptr)
+                    removeItem(cast1->getInventory(), item->getName());
+            }
+
+            auto cast2 = dynamic_pointer_cast<Box>(cActor);
+            if (cast2 && cast2->searched) {
+                item = findItem(cast2->getInventory(), target);
+                if (item != nullptr)
+                    removeItem(cast2->getInventory(), item->getName());
+            }
+
+        }
+
+        // If it still isn't found, then kill it
+        if (item == nullptr) {
+            cout << "Could not find item '" << target << ".'" << endl;
+            return;
+        }
     }
 
     // Give the item to the player
@@ -118,8 +149,10 @@ void Game::handleTake(const string& target) {
 
     cout << "The " << item->getName() << " was added to your inventory." << endl;
 
-    // Remove the item from the room
-    removeItem(room, item->getName());
+    // Remove the item
+    if (fromRoom) {
+        removeItem(room, item->getName());
+    }
 
 }
 
@@ -162,8 +195,74 @@ void Game::handleLook(const string& target) {
 }
 
 
+// View the inventory a body or box in the room
+// Also prompt to take any items
+void Game::handleSearch(const string& target) {
+    bool found{ false };
+    ItemSet inventory{};
+
+    // First, search the box actors for a name that matches the target
+    auto box = findActorType<Box>(getRoomPtr(), target);
+    if (box != nullptr) {
+        box->searched = true;
+        inventory = box->getInventory();
+        found = true;
+        
+        // Print its contents
+        cout << "You open the " << box->getName() << " and look inside..." << endl;
+        waitForSeconds(1.0f);
+        cout << "..." << endl;
+        waitForSeconds(1.0f);
+
+        // If the box is empty
+        if (inventory.size() == 0) {
+            cout << "There's nothing but dust inside." << endl << endl;;
+            return;
+        }
+
+        cout << "Contents of the " << box->getName() << ":" << endl;
+        printInventory(inventory);
+        cout << endl;
+
+    }
+
+    // Second, if it wasn't already found, then search the body actors
+    auto body = findActorType<Body>(getRoomPtr(), target);
+    if (!found && body != nullptr) {
+        body->searched = true;
+        inventory = body->getInventory();
+        found = true;
+
+        // Print its contents
+        cout << "You rummage through the body's things..." << endl;
+        waitForSeconds(1.0f);
+        cout << "..." << endl;
+        waitForSeconds(1.0f);
+
+        // If the body is empty
+        if (inventory.size() == 0) {
+            cout << "You couldn't manage to find anything worth the effort." << endl << endl;;
+            return;
+        }
+
+        cout << "Here's what you could find:" << endl;
+        
+        printInventory(inventory);
+        cout << endl;
+
+    }
+
+    // If no actor was found, then return
+    if (!found) {
+        cout << "I don't know what you meant by '" << target << ".'" << endl;
+        return;
+    }
+
+}
+
+
 // Find an item in a room based on a specific query
-shared_ptr<Item> Game::findItem(Room* room, const string& query, int its) {
+shared_ptr<Item> Game::findItem(const ItemSet& inventory, const string& query, int its) {
 
     // Split the query into mulitple words
     stringstream ss(query);
@@ -180,11 +279,11 @@ shared_ptr<Item> Game::findItem(Room* room, const string& query, int its) {
     }
 
     // Go through and find one that contains the query
-    for (int item = 0; item < room->items.size(); item++) {
-        string name = room->items[item]->getName();
+    for (int item = 0; item < inventory.size(); item++) {
+        string name = inventory[item]->getName();
         lowercase(name);        // Make the name lowercase
         if (name.find(newQuery) != string::npos) {
-            return room->items[item];
+            return inventory[item];
         }
     }
     
@@ -194,8 +293,11 @@ shared_ptr<Item> Game::findItem(Room* room, const string& query, int its) {
     }
 
     // Otherwise, recurse
-    return findItem(room, query, its+1);
+    return findItem(inventory, query, its+1);
 
+}
+shared_ptr<Item> Game::findItem(Room* room, const string& query) {
+    return findItem(room->items, query);
 }
 
 // Find an actor in a room based on a specific query
@@ -216,7 +318,7 @@ shared_ptr<Actor> Game::findActor(Room* room, const string& query, int its) {
     }
 
     // Go through and find one that contains the query
-    for (int actor = 0; actor < room->items.size(); actor++) {
+    for (int actor = 0; actor < room->actors.size(); actor++) {
         string name = room->actors[actor]->getName();
         lowercase(name);        // Make the name lowercase
         if (name.find(newQuery) != string::npos) {
@@ -232,4 +334,12 @@ shared_ptr<Actor> Game::findActor(Room* room, const string& query, int its) {
     // Otherwise, recurse
     return findActor(room, query, its+1);
 
+}
+
+// Print a passed inventory
+void Game::printInventory(const ItemSet& inventory) {
+    for (int item = 0; item < inventory.size(); item++) {
+        cout << "> " << inventory[item]->getName() << endl;
+        cout << " - " << inventory[item]->getDesc() << endl;
+    }
 }

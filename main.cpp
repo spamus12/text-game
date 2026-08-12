@@ -33,10 +33,14 @@ void setup() {
 		30
 	);
 
-	knight->setInitDesc("A towering soldier in heavy armor leans against a nearby wall.");
+	knight->setInitDesc("A towering knight in heavy armor leans against a nearby wall.");
+
+	vector<shared_ptr<Item>> boxInventory{ sword, sword, plateArmor };
+	auto box = make_shared<Box>("box1", "Wooden Box", boxInventory);
 
 	Game::addRoom("Start", 0, 0, "You are in an empty room.");
 	Game::spawnActor("Start", knight);
+	Game::spawnActor("Start", box);
 
 	auto pennies = make_shared<Item>("pile of pennies", "It is simply a pile of copper coins.");
 	Game::spawnItem("Start", pennies);

@@ -328,7 +328,8 @@ void Player::setSpeed(int amount) {
 /* Body class */
 Body::Body(string _ID, string _name, vector<shared_ptr<Item>> _inventory) :
 	Actor(_ID, _name),
-	inventory{ _inventory }
+	inventory{ _inventory },
+	searched{ false }
 {
 
 	// Define default examine function
@@ -374,7 +375,8 @@ vector<shared_ptr<Item>>& Body::getInventory() {
 /* Box class */
 Box::Box(string _ID, string _name, vector<shared_ptr<Item>> _inventory) :
 	Actor(_ID, _name),
-	inventory{ _inventory }
+	inventory{ _inventory },
+	searched{ false }
 {
 
 	// Define default examine function
@@ -392,7 +394,7 @@ Box::Box(string _ID, string _name, vector<shared_ptr<Item>> _inventory) :
 
 	// Change the initial description of the box
 	initDesc = "There is ";
-	initDesc += (Game::vowelStart(name) ? "An " : "A ") + name + ".";
+	initDesc += (Game::vowelStart(name) ? "an " : "a ") + name + ".";
 }
 
 // Get the first instance of an item by name and remove it
